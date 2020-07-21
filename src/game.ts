@@ -1,7 +1,15 @@
 import { getCurrentRealm } from '@decentraland/EnvironmentAPI'
 import { activate, tileColor } from './switchMaterial'
 import utils from '../node_modules/decentraland-ecs-utils/index'
-import { message, updateUI, setUIMessage } from './ui'
+import { updateUI, setUIMessage } from './ui'
+
+export enum messageType {
+  JOIN,
+  TILEFLIP,
+  NEWGAME,
+  END,
+  MESSAGE,
+}
 
 let socket
 
@@ -13,15 +21,27 @@ export async function joinSocketsServer() {
   log(`You are in the realm: `, realm.displayName)
   // connect to ws server
   socket = new WebSocket(
-    'wss://64-225-45-232.nip.io/broadcast/' + realm.displayName
+    'ws://localhost:13370' //wss://64-225-45-232.nip.io/broadcast/' + realm.displayName
   )
   // listen for incoming ws messages
   socket.onmessage = function (event) {
     try {
-      const parsed = JSON.parse(event.data)
-      log(parsed)
-      // activate cube referenced in message
-      activate(tiles[parsed.tile], parsed.color)
+      const msg = JSON.parse(event.data)
+      log(msg)
+      switch (msg.type) {
+        case messageType.NEWGAME:
+          game.startGame(msg.duration)
+          break
+        case messageType.TILEFLIP:
+          activate(tiles[msg.tile], msg.color)
+          break
+        case messageType.MESSAGE:
+          setUIMessage(msg.text)
+          break
+        case messageType.END:
+          game.endGame(msg.blue, msg.red)
+          break
+      }
     } catch (error) {
       log(error)
     }
@@ -33,7 +53,9 @@ let tiles: Entity[] = []
 
 const gridX = 14
 const gridY = 14
-const gameDuration = 60
+
+let blueScore = 0
+let redScore = 0
 
 let playerTeam: tileColor
 
@@ -63,20 +85,6 @@ for (let i = 0; i < gridX; i++) {
       })
     )
     tile.addComponent(new PlaneShape())
-    tile.addComponent(
-      new OnPointerDown(
-        (e) => {
-          // send ws message when clicked
-          socket.send(
-            JSON.stringify({
-              tile: i,
-              color: playerTeam,
-            })
-          )
-        },
-        { button: ActionButton.POINTER, hoverText: 'Activate' }
-      )
-    )
     tile.addComponent(new TileColor())
     engine.addEntity(tile)
 
@@ -84,6 +92,7 @@ for (let i = 0; i < gridX; i++) {
       new utils.TriggerComponent(triggerBox, 0, null, null, null, () => {
         socket.send(
           JSON.stringify({
+            type: messageType.TILEFLIP,
             tile: i * gridY + j,
             color: playerTeam,
           })
@@ -114,12 +123,14 @@ engine.addEntity(blueBase)
 
 blueBase.addComponent(
   new utils.TriggerComponent(triggerBox, 0, null, null, null, () => {
+    if (playerTeam == tileColor.BLUE) return
     playerTeam = tileColor.BLUE
-    game.active = true
-    game.timer = gameDuration
+    // TODO: get player ID
     setUIMessage('Joined Blue Team')
     socket.send(
       JSON.stringify({
+        type: messageType.JOIN,
+        id: 1,
         team: tileColor.BLUE,
       })
     )
@@ -167,12 +178,14 @@ engine.addEntity(redBase)
 
 redBase.addComponent(
   new utils.TriggerComponent(triggerBox, 0, null, null, null, () => {
+    if (playerTeam == tileColor.RED) return
     playerTeam = tileColor.RED
-    game.active = true
-    game.timer = gameDuration
+    // TODO: get player ID
     setUIMessage('Joined Red Team')
     socket.send(
       JSON.stringify({
+        type: messageType.JOIN,
+        id: 1,
         team: tileColor.RED,
       })
     )
@@ -201,6 +214,15 @@ redSign.addComponent(
   })
 )
 
+export function basesVisible(state: boolean) {
+  redBase.getComponent(PlaneShape).visible = state
+  redArrow.getComponent(GLTFShape).visible = state
+  redSign.getComponent(TextShape).value = state ? 'Join Red Team' : ''
+  blueBase.getComponent(PlaneShape).visible = state
+  blueArrow.getComponent(GLTFShape).visible = state
+  blueSign.getComponent(TextShape).value = state ? 'Join Blue Team' : ''
+}
+
 export class GameLoop {
   active: boolean = false
   timer: number = 0
@@ -216,29 +238,53 @@ export class GameLoop {
       this.updateTimer = 0
       let tiles: number[] = countTiles()
       updateUI(this.timer, tiles[0], tiles[1])
+      blueScore = tiles[0]
+      redScore = tiles[1]
     }
-    if (this.timer < 0) {
-      this.timer = 0
-      let tiles: number[] = countTiles()
-      updateUI(this.timer, tiles[0], tiles[1])
-      playerTeam = null
-      this.active = false
-      if (tiles[0] > tiles[1]) {
-        setUIMessage('Blue team wins!')
-      } else if (tiles[0] < tiles[1]) {
-        setUIMessage('Red team wins!')
-      } else {
-        setUIMessage("It's a tie!")
-      }
-    }
+    // if (this.timer < 0) {
+    //   this.endGame()
+    // }
   }
   constructor(updateInterval: number, matchLength: number) {
     this.updateInterval = updateInterval
     this.timer = matchLength
   }
+  startGame(gameDuration) {
+    this.active = true
+    this.timer = gameDuration
+    blueScore = 0
+    redScore = 0
+    basesVisible(false)
+
+    for (let tile of tiles) {
+      tile.getComponent(TileColor).color = tileColor.NEUTRAL
+      activate(tile, tileColor.NEUTRAL)
+    }
+    updateUI(this.timer, 0, 0)
+  }
+  endGame(blue: number, red: number) {
+    this.timer = 0
+    playerTeam = null
+    this.active = false
+    basesVisible(true)
+    //let tiles: number[] = countTiles()
+    // updateUI(this.timer, tiles[0], tiles[1])
+    // blueScore = tiles[0]
+    // redScore = tiles[1]
+
+    updateUI(0, blue, red)
+
+    if (blue > red) {
+      setUIMessage('Blue team wins!')
+    } else if (blue < red) {
+      setUIMessage('Red team wins!')
+    } else {
+      setUIMessage("It's a tie!")
+    }
+  }
 }
 
-let game = new GameLoop(1, gameDuration)
+let game = new GameLoop(1, 60)
 engine.addSystem(game)
 
 export function countTiles() {

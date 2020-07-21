@@ -3,7 +3,7 @@ import utils from '../node_modules/decentraland-ecs-utils/index'
 
 const canvas = new UICanvas()
 
-export const message = new UIText(canvas)
+const message = new UIText(canvas)
 message.vAlign = 'center'
 message.hAlign = 'center'
 message.hTextAlign = 'center'
@@ -12,9 +12,9 @@ message.fontSize = 60
 message.color = Color4.FromHexString(`#BB2528FF`) // new Color4(0, 0, 0, 1)
 message.visible = false
 
-export const timeRemaining = new UIText(canvas)
+const timeRemaining = new UIText(canvas)
 timeRemaining.vAlign = 'bottom'
-timeRemaining.hAlign = 'left'
+timeRemaining.hAlign = 'right'
 timeRemaining.hTextAlign = 'center'
 timeRemaining.adaptWidth = true
 timeRemaining.fontSize = 20
@@ -22,9 +22,9 @@ timeRemaining.color = Color4.Black()
 timeRemaining.positionY = 80
 timeRemaining.visible = false
 
-export const blueScore = new UIText(canvas)
+const blueScore = new UIText(canvas)
 blueScore.vAlign = 'bottom'
-blueScore.hAlign = 'left'
+blueScore.hAlign = 'right'
 blueScore.hTextAlign = 'center'
 blueScore.adaptWidth = true
 blueScore.fontSize = 20
@@ -32,9 +32,9 @@ blueScore.color = Color4.Blue()
 blueScore.positionY = 50
 blueScore.visible = false
 
-export const redScore = new UIText(canvas)
+const redScore = new UIText(canvas)
 redScore.vAlign = 'bottom'
-redScore.hAlign = 'left'
+redScore.hAlign = 'right'
 redScore.hTextAlign = 'center'
 redScore.adaptWidth = true
 redScore.fontSize = 20

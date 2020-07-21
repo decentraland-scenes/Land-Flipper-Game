@@ -14,7 +14,6 @@
     "decentraland-ecs": "latest"
   },
   "dependencies": {
-    "colyseus.js": "^0.13.1",
     "decentraland-ecs-utils": "^1.1.4"
   }
 }
