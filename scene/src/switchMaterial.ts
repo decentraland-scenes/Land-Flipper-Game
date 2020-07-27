@@ -8,19 +8,22 @@ export enum tileColor {
   RED,
 }
 
-let neutralMaterial = new Material()
+export let neutralMaterial = new Material()
 neutralMaterial.albedoColor = Color4.Gray()
 
 let blueMaterial = new Material()
 blueMaterial.albedoColor = Color3.Blue()
-// blueMaterial.emissiveColor = Color3.Blue()
-// blueMaterial.metallic = 1
-// blueMaterial.emissiveIntensity = 5
-// blueMaterial.roughness = 1
+blueMaterial.emissiveIntensity = 1
+blueMaterial.emissiveColor = Color3.Blue()
+blueMaterial.metallic = 0.4
+blueMaterial.roughness = 1
 
 let redMaterial = new Material()
 redMaterial.albedoColor = Color3.Red()
-//redMaterial.emissiveColor = Color3.Red()
+redMaterial.emissiveIntensity = 1
+redMaterial.emissiveColor = Color3.Red()
+redMaterial.metallic = 0.4
+redMaterial.roughness = 1
 
 export function activate(entity: Entity, color: tileColor) {
   entity.getComponent(TileColor).color = color

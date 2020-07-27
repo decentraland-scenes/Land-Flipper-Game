@@ -42,9 +42,15 @@ redScore.color = Color4.FromHexString(`#BB2528FF`)
 redScore.positionY = 20
 redScore.visible = false
 
-export function setUIMessage(value: string, duration?: number) {
+export function setUIMessage(value: string, duration?: number, color?: Color4) {
   message.visible = true
   message.value = value
+
+  if (color) {
+    message.color = color
+  } else {
+    message.color = Color4.Black()
+  }
 
   let dummyEnty = new Entity()
   engine.addEntity(dummyEnty)

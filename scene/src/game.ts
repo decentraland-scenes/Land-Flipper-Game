@@ -9,6 +9,7 @@ export enum messageType {
   NEWGAME,
   END,
   MESSAGE,
+  SYNC,
 }
 
 let socket
@@ -41,11 +42,17 @@ export async function joinSocketsServer() {
         case messageType.END:
           game.endGame(msg.blue, msg.red)
           break
+        case messageType.SYNC:
+          // TODO: set everything up from server response
+          break
       }
     } catch (error) {
       log(error)
     }
   }
+
+  // ask for current game state
+  socket.send(JSON.stringify({ type: messageType.SYNC }))
 }
 
 // list of all cubes
@@ -69,16 +76,16 @@ export class TileColor {
   color: tileColor
 }
 
-// add cubes
+// add tiles
 for (let i = 0; i < gridX; i++) {
   for (let j = 0; j < gridY; j++) {
     let tile = new Entity()
     tile.addComponent(
       new Transform({
         position: new Vector3(
-          (i * 42) / gridX + 1.5,
-          0,
-          (j * 42) / gridY + 1.5
+          (i * 42) / gridX + 2.5,
+          0.17,
+          (j * 42) / gridY + 2.5
         ),
         rotation: Quaternion.Euler(90, 0, 0),
         scale: new Vector3(42 / gridX, 42 / gridY, 42 / gridY),
@@ -112,9 +119,13 @@ blueMaterial.albedoColor = Color3.Blue()
 let blueBase = new Entity()
 blueBase.addComponent(
   new Transform({
-    position: new Vector3(45, 0, 3),
+    position: new Vector3(45.4, 0.17, 3),
     rotation: Quaternion.Euler(90, 0, 0),
-    scale: new Vector3((42 / gridX) * 2, (42 / gridY) * 2, (42 / gridY) * 2),
+    scale: new Vector3(
+      (42 / gridX) * 1.6,
+      (42 / gridY) * 1.6,
+      (42 / gridY) * 1.6
+    ),
   })
 )
 blueBase.addComponent(new PlaneShape())
@@ -126,7 +137,7 @@ blueBase.addComponent(
     if (playerTeam == tileColor.BLUE) return
     playerTeam = tileColor.BLUE
     // TODO: get player ID
-    setUIMessage('Joined Blue Team')
+    setUIMessage('Joined Blue Team', 2000, Color4.Blue())
     socket.send(
       JSON.stringify({
         type: messageType.JOIN,
@@ -167,9 +178,13 @@ redMaterial.albedoColor = Color3.Red()
 let redBase = new Entity()
 redBase.addComponent(
   new Transform({
-    position: new Vector3(3, 0, 45),
+    position: new Vector3(3, 0.17, 45.4),
     rotation: Quaternion.Euler(90, 0, 0),
-    scale: new Vector3((42 / gridX) * 2, (42 / gridY) * 2, (42 / gridY) * 2),
+    scale: new Vector3(
+      (42 / gridX) * 1.6,
+      (42 / gridY) * 1.6,
+      (42 / gridY) * 1.6
+    ),
   })
 )
 redBase.addComponent(new PlaneShape())
@@ -181,7 +196,7 @@ redBase.addComponent(
     if (playerTeam == tileColor.RED) return
     playerTeam = tileColor.RED
     // TODO: get player ID
-    setUIMessage('Joined Red Team')
+    setUIMessage('Joined Red Team', 2000, Color4.Red())
     socket.send(
       JSON.stringify({
         type: messageType.JOIN,
@@ -241,9 +256,6 @@ export class GameLoop {
       blueScore = tiles[0]
       redScore = tiles[1]
     }
-    // if (this.timer < 0) {
-    //   this.endGame()
-    // }
   }
   constructor(updateInterval: number, matchLength: number) {
     this.updateInterval = updateInterval
@@ -256,10 +268,8 @@ export class GameLoop {
     redScore = 0
     basesVisible(false)
 
-    for (let tile of tiles) {
-      tile.getComponent(TileColor).color = tileColor.NEUTRAL
-      activate(tile, tileColor.NEUTRAL)
-    }
+    resetAllTiles()
+
     updateUI(this.timer, 0, 0)
   }
   endGame(blue: number, red: number) {
@@ -267,17 +277,13 @@ export class GameLoop {
     playerTeam = null
     this.active = false
     basesVisible(true)
-    //let tiles: number[] = countTiles()
-    // updateUI(this.timer, tiles[0], tiles[1])
-    // blueScore = tiles[0]
-    // redScore = tiles[1]
 
     updateUI(0, blue, red)
 
     if (blue > red) {
-      setUIMessage('Blue team wins!')
+      setUIMessage('Blue team wins!', 2000, Color4.Blue())
     } else if (blue < red) {
-      setUIMessage('Red team wins!')
+      setUIMessage('Red team wins!', 2000, Color4.Red())
     } else {
       setUIMessage("It's a tie!")
     }
@@ -286,6 +292,13 @@ export class GameLoop {
 
 let game = new GameLoop(1, 60)
 engine.addSystem(game)
+
+export function resetAllTiles() {
+  for (let tile of tiles) {
+    tile.getComponent(TileColor).color = tileColor.NEUTRAL
+    activate(tile, tileColor.NEUTRAL)
+  }
+}
 
 export function countTiles() {
   let tileCount = [0, 0]
@@ -299,3 +312,13 @@ export function countTiles() {
 
   return tileCount
 }
+
+//  floor
+const baseScene: Entity = new Entity()
+baseScene.addComponent(new GLTFShape('models/baseScene.glb'))
+baseScene.addComponent(
+  new Transform({
+    scale: new Vector3(1.5, 1.5, 1.5),
+  })
+)
+engine.addEntity(baseScene)
