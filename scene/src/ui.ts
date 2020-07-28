@@ -1,4 +1,3 @@
-import decentralandEcsUtils from '../node_modules/decentraland-ecs-utils/index'
 import utils from '../node_modules/decentraland-ecs-utils/index'
 
 const canvas = new UICanvas()
