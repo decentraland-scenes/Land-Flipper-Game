@@ -152,15 +152,15 @@ export function syncScene(gameActive: boolean, tilesServer: tileColor[]) {
   }
 }
 
-//  floor
-const baseScene: Entity = new Entity()
-baseScene.addComponent(new GLTFShape('models/baseScene.glb'))
-baseScene.addComponent(
+//  ground
+const ground: Entity = new Entity()
+ground.addComponent(new GLTFShape('models/baseLight.glb'))
+ground.addComponent(
   new Transform({
-    scale: new Vector3(1.5, 1.5, 1.5),
+    scale: new Vector3(3, 3, 3),
   })
 )
-engine.addEntity(baseScene)
+engine.addEntity(ground)
 
 // ask for current game state
 socket.send(JSON.stringify({ type: messageType.SYNC }))
