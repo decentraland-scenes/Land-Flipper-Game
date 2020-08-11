@@ -2,7 +2,7 @@
 
 A multiplayer game with websockets, where the game logic is carried out server-side.
 
-![](gameplay.gif)
+![demo](https://github.com/decentraland-scenes/Land-Flipper-Game/blob/master/screenshots/land-flipper-game.gif)
 
 This scene shows you:
 
@@ -24,7 +24,7 @@ Each scene runs its own calculations of the current remaining time and the score
 
 Download and install the Decentraland CLI by running the following command:
 
-```bash
+```
 npm i -g decentraland
 ```
 
@@ -58,4 +58,3 @@ If something doesn’t work, please [file an issue](https://github.com/decentral
 ## Copyright info
 
 This scene is protected with a standard Apache 2 licence. See the terms and conditions in the [LICENSE](/LICENSE) file.
-

@@ -1,4 +1,4 @@
-import * as WebSocket from 'ws'
+import * as WebSocket from "ws"
 
 const wss = new WebSocket.Server({ port: 13370 })
 
@@ -46,11 +46,11 @@ interface roomDictionary {
 }
 var rooms = {} as roomDictionary
 
-wss.on('connection', (clientWs, request) => {
+wss.on("connection", (clientWs, request) => {
   const ws = clientWs as customWs
-  ws.room = request.url || ''
+  ws.room = request.url || ""
 
-  ws.on('message', function incoming(message) {
+  ws.on("message", function incoming(message) {
     const msg = JSON.parse(message.toString())
     console.log(msg)
 
@@ -63,26 +63,20 @@ wss.on('connection', (clientWs, request) => {
     // player joining a team
     if (msg.type == messageType.JOIN) {
       if (room.gameActive == true) {
-        console.log('player denied, game in progress')
+        console.log("Player denied, game in progress")
         ws.send(
           JSON.stringify({
             type: messageType.MESSAGE,
-            text: 'Game already active',
+            text: "Game in progress",
           })
         )
         return
       } else if (checkAlredyInTeams(msg.id, ws.room) == true) {
-        console.log(
-          'player denied, already playing: ',
-          msg.id,
-          ' existing in teams: ',
-          room.blueTeam,
-          room.redTeam
-        )
+        console.log("Player denied, already playing: ", msg.id, " existing in teams: ", room.blueTeam, room.redTeam)
         ws.send(
           JSON.stringify({
             type: messageType.MESSAGE,
-            text: 'You already belong to a team',
+            text: "You are already on a team",
           })
         )
         return
@@ -90,20 +84,20 @@ wss.on('connection', (clientWs, request) => {
         let newPlayer = new Player(msg.id, msg.team)
         if (msg.team == tileColor.BLUE) {
           room.blueTeam.push(newPlayer)
-          console.log(msg.id, ' joined the blue team')
+          console.log(msg.id, " joined the blue team")
         } else {
           room.redTeam.push(newPlayer)
-          console.log(msg.id, ' joined the red team')
+          console.log(msg.id, " joined the red team")
         }
 
         // with players on both teams, start new game
         if (room.blueTeam.length > 0 && room.redTeam.length > 0) {
           newGame(ws.room)
-          console.log('new game starting! with ', room.blueTeam, room.redTeam)
+          console.log("New game starting! with ", room.blueTeam, room.redTeam)
         } else {
           JSON.stringify({
             type: messageType.MESSAGE,
-            text: 'Waiting for an opponent',
+            text: "Waiting for an opponent",
           })
         }
       }
@@ -124,8 +118,8 @@ wss.on('connection', (clientWs, request) => {
   })
 })
 
-wss.once('listening', () => {
-  console.log('Listening on port 13370')
+wss.once("listening", () => {
+  console.log("Listening on port 13370")
 })
 
 export async function sendAll(message: WebSocket.Data, room: string) {
@@ -142,34 +136,28 @@ export async function sendAll(message: WebSocket.Data, room: string) {
 }
 
 export async function newGame(room: string) {
-  sendAll(
-    JSON.stringify({ type: messageType.MESSAGE, text: 'New Game in 3' }),
-    room
-  )
+  sendAll(JSON.stringify({ type: messageType.MESSAGE, text: "Game Starts in..." }), room)
   setTimeout(function () {
-    sendAll(
-      JSON.stringify({ type: messageType.MESSAGE, text: 'New Game in 2' }),
-      room
-    )
+    sendAll(JSON.stringify({ type: messageType.MESSAGE, text: "3" }), room)
   }, 2000)
   setTimeout(function () {
-    sendAll(
-      JSON.stringify({ type: messageType.MESSAGE, text: 'New Game in 1' }),
-      room
-    )
+    sendAll(JSON.stringify({ type: messageType.MESSAGE, text: "2" }), room)
   }, 4000)
+  setTimeout(function () {
+    sendAll(JSON.stringify({ type: messageType.MESSAGE, text: "1" }), room)
+  }, 6000)
+  setTimeout(function () {
+    sendAll(JSON.stringify({ type: messageType.MESSAGE, text: "GO" }), room)
+  }, 8000)
 
   setTimeout(function () {
     rooms[room].gameActive = true
-    sendAll(
-      JSON.stringify({ type: messageType.NEWGAME, duration: gameDuration }),
-      room
-    )
+    sendAll(JSON.stringify({ type: messageType.NEWGAME, duration: gameDuration }), room)
 
     setTimeout(function () {
       endGame(room)
     }, gameDuration * 1000)
-  }, 6000)
+  }, 8000)
 }
 
 export async function endGame(room: string) {
@@ -186,10 +174,7 @@ export async function endGame(room: string) {
       redScore += 1
     }
   }
-  sendAll(
-    JSON.stringify({ type: messageType.END, blue: blueScore, red: redScore }),
-    room
-  )
+  sendAll(JSON.stringify({ type: messageType.END, blue: blueScore, red: redScore }), room)
   rooms[room].tiles = new Array(14 * 14).fill(null)
 }
 
