@@ -1,13 +1,13 @@
-import { activate, tileColor, TileColor, addTiles } from './tiles'
-import { updateUI, setUIMessage } from './ui'
-import { joinTeam } from './team'
-import { messageType } from './messaging'
-import { getCurrentRealm } from '@decentraland/EnvironmentAPI'
-import { addBases, basesVisible } from './bases'
+import { activate, tileColor, TileColor, addTiles } from "./tiles"
+import { updateUI, setUIMessage } from "./ui"
+import { joinTeam } from "./team"
+import { messageType } from "./messaging"
+import { getCurrentRealm } from "@decentraland/EnvironmentAPI"
+import { addBases, basesVisible } from "./bases"
 
 let socket: WebSocket
 
-// list of all cubes
+// List of all cubes
 let tiles: Entity[] = []
 
 const gridX = 14
@@ -19,14 +19,14 @@ let redScore = 0
 let game: GameLoop
 
 export async function joinSocketsServer() {
-  // fetch realm data to keep players in different realms separate
+  // Fetch realm data to keep players in different realms separate
   let realm = await getCurrentRealm()
-  log(`You are in the realm: `, realm.displayName)
-  // connect to ws server
+  log("You are in the realm: ", realm.displayName)
+  // Connect to ws server
   socket = new WebSocket(
-    'ws://localhost:13370' //wss://64-225-45-232.nip.io/broadcast/' + realm.displayName
+    "ws://localhost:13370" //wss://64-225-45-232.nip.io/broadcast/' + realm.displayName
   )
-  // listen for incoming ws messages
+  // Listen for incoming ws messages
   socket.onmessage = function (event) {
     try {
       const msg = JSON.parse(event.data)
@@ -108,9 +108,9 @@ export class GameLoop {
     updateUI(0, blue, red)
 
     if (blue > red) {
-      setUIMessage('Blue team wins!', 2000, Color4.Blue())
+      setUIMessage("Blue team wins!", 2000, Color4.FromInts(0, 150, 200, 255))
     } else if (blue < red) {
-      setUIMessage('Red team wins!', 2000, Color4.Red())
+      setUIMessage("Red team wins!", 2000, Color4.FromInts(250, 75, 90, 255))
     } else {
       setUIMessage("It's a tie!")
     }
@@ -152,15 +152,11 @@ export function syncScene(gameActive: boolean, tilesServer: tileColor[]) {
   }
 }
 
-//  ground
-const ground: Entity = new Entity()
-ground.addComponent(new GLTFShape('models/baseLight.glb'))
-ground.addComponent(
-  new Transform({
-    scale: new Vector3(3, 3, 3),
-  })
-)
-engine.addEntity(ground)
+//  Base
+const baseGrid: Entity = new Entity()
+baseGrid.addComponent(new GLTFShape("models/baseGrid.glb"))
+baseGrid.addComponent(new Transform())
+engine.addEntity(baseGrid)
 
-// ask for current game state
+// Ask for current game state
 socket.send(JSON.stringify({ type: messageType.SYNC }))
