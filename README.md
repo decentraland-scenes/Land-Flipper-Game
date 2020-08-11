@@ -41,8 +41,8 @@ NOTE: If this is your first time running the scene then you need to run `npm ins
 Keep the server running, run the scene on a separate command line window:
 
 ```
-cd scene
-dcl start
+$ cd scene
+$ dcl start
 ```
 
 **Scene Usage**
