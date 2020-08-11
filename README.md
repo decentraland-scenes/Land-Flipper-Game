@@ -1,4 +1,4 @@
-# Parcel Flipper
+# Land Flipper Game
 
 A multiplayer game with websockets, where the game logic is carried out server-side.
 
