@@ -25,14 +25,14 @@ Each scene runs its own calculations of the current remaining time and the score
 Download and install the Decentraland CLI by running the following command:
 
 ```
-npm i -g decentraland
+$ npm i -g decentraland
 ```
 
 **Run the server locally**
 
 ```
-cd server
-npm start
+$ cd server
+$ npm start
 ```
 NOTE: If this is your first time running the scene then you need to run `npm install` before npm `npm start`
 
