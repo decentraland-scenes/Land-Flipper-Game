@@ -34,7 +34,7 @@ $ npm i -g decentraland
 $ cd server
 $ npm start
 ```
-NOTE: If this is your first time running the scene then you need to run `npm install` before npm `npm start`
+NOTE: If this is your first time running the scene then you need to run `npm install` before `npm start`
 
 **Run the scene**
 
