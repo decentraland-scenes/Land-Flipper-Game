@@ -1,9 +1,10 @@
-import { activate, tileColor, TileColor, addTiles } from "./tiles"
-import { updateUI, setUIMessage } from "./ui"
-import { joinTeam } from "./team"
-import { messageType } from "./messaging"
-import { getCurrentRealm } from "@decentraland/EnvironmentAPI"
-import { addBases, basesVisible } from "./bases"
+import { activate, tileColor, TileColor, addTiles } from './tiles'
+
+import { joinTeam } from './team'
+import { messageType } from './messaging'
+import { addBases, basesVisible } from './bases'
+import * as ui from '../node_modules/@dcl/ui-utils/index'
+import { getCurrentRealm } from '@decentraland/EnvironmentAPI'
 
 let socket: WebSocket
 
@@ -13,18 +14,64 @@ let tiles: Entity[] = []
 const gridX = 14
 const gridY = 14
 
-let blueScore = 0
-let redScore = 0
-
 let game: GameLoop
+
+// UI
+
+const timeRemainingLabel = new ui.CornerLabel(
+  'Time Remaining',
+  -135,
+  80,
+  Color4.FromInts(0, 200, 0, 255),
+  20
+)
+const timeRemaining = new ui.UICounter(
+  60,
+  -30,
+  80,
+  Color4.FromInts(0, 200, 0, 255),
+  20
+)
+
+const blueLabel = new ui.CornerLabel(
+  'Blue',
+  -80,
+  50,
+  Color4.FromInts(0, 150, 200, 255),
+  20
+)
+const blueCounter = new ui.UICounter(
+  0,
+  -30,
+  50,
+  Color4.FromInts(0, 150, 200, 255),
+  20
+)
+
+const redLabel = new ui.CornerLabel(
+  'Red',
+  -80,
+  20,
+  Color4.FromInts(250, 75, 90, 255),
+  20
+)
+const redCounter = new ui.UICounter(
+  0,
+  -30,
+  20,
+  Color4.FromInts(250, 75, 90, 255),
+  20
+)
+
+// Logic
 
 export async function joinSocketsServer() {
   // Fetch realm data to keep players in different realms separate
   let realm = await getCurrentRealm()
-  log("You are in the realm: ", realm.displayName)
+  log('You are in the realm: ', realm.displayName)
   // Connect to ws server
   socket = new WebSocket(
-    "ws://localhost:13370" //wss://64-225-45-232.nip.io/broadcast/' + realm.displayName
+    'wss://165-232-67-9.nip.io/broadcast/' + realm.displayName
   )
   // Listen for incoming ws messages
   socket.onmessage = function (event) {
@@ -39,7 +86,7 @@ export async function joinSocketsServer() {
           activate(tiles[msg.tile], msg.color)
           break
         case messageType.MESSAGE:
-          setUIMessage(msg.text)
+          ui.displayAnnouncement(msg.text, 3, false, Color4.Black())
           break
         case messageType.END:
           game.endGame(msg.blue, msg.red)
@@ -79,9 +126,9 @@ export class GameLoop {
     if (this.updateTimer > this.updateInterval) {
       this.updateTimer = 0
       let tiles: number[] = countTiles()
-      updateUI(this.timer, tiles[0], tiles[1])
-      blueScore = tiles[0]
-      redScore = tiles[1]
+      timeRemaining.set(Math.floor(this.timer))
+      blueCounter.set(tiles[0])
+      redCounter.set(tiles[1])
     }
   }
   constructor(updateInterval: number, matchLength: number) {
@@ -91,13 +138,13 @@ export class GameLoop {
   startGame(gameDuration) {
     this.active = true
     this.timer = gameDuration
-    blueScore = 0
-    redScore = 0
     basesVisible(false)
 
     resetAllTiles()
 
-    updateUI(this.timer, 0, 0)
+    timeRemaining.set(this.timer)
+    blueCounter.set(0)
+    redCounter.set(0)
   }
   endGame(blue: number, red: number) {
     this.timer = 0
@@ -105,14 +152,26 @@ export class GameLoop {
     this.active = false
     basesVisible(true)
 
-    updateUI(0, blue, red)
+    timeRemaining.set(0)
+    blueCounter.set(blue)
+    redCounter.set(red)
 
     if (blue > red) {
-      setUIMessage("Blue team wins!", 2000, Color4.FromInts(0, 150, 200, 255))
+      ui.displayAnnouncement(
+        'Blue team wins!',
+        3,
+        false,
+        Color4.FromInts(0, 150, 200, 255)
+      )
     } else if (blue < red) {
-      setUIMessage("Red team wins!", 2000, Color4.FromInts(250, 75, 90, 255))
+      ui.displayAnnouncement(
+        'Blue team wins!',
+        3,
+        false,
+        Color4.FromInts(250, 75, 90, 255)
+      )
     } else {
-      setUIMessage("It's a tie!")
+      ui.displayAnnouncement("It's a tie!", 3, false, Color4.Black())
     }
   }
 }
@@ -154,7 +213,7 @@ export function syncScene(gameActive: boolean, tilesServer: tileColor[]) {
 
 //  Base
 const baseGrid: Entity = new Entity()
-baseGrid.addComponent(new GLTFShape("models/baseGrid.glb"))
+baseGrid.addComponent(new GLTFShape('models/baseGrid.glb'))
 baseGrid.addComponent(new Transform())
 engine.addEntity(baseGrid)
 

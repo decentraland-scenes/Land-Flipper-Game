@@ -1,11 +1,11 @@
-import { tileColor } from "./tiles"
-import { setUIMessage } from "./ui"
-import { getUserData } from "@decentraland/Identity"
-import { messageType } from "./messaging"
+import { tileColor } from './tiles'
+import { getUserData } from '@decentraland/Identity'
+import { messageType } from './messaging'
+import * as ui from '../node_modules/@dcl/ui-utils/index'
 
 export let playerTeam: tileColor
 
-export let playerId: string = ""
+export let playerId: string = ''
 
 export async function getUserId() {
   let userData = await getUserData()
@@ -13,7 +13,7 @@ export async function getUserId() {
 }
 
 export async function joinTeam(team: tileColor, socket: WebSocket) {
-  if (playerId == "") {
+  if (playerId == '') {
     playerId = await getUserId()
   }
 
@@ -21,9 +21,19 @@ export async function joinTeam(team: tileColor, socket: WebSocket) {
 
   if (team == tileColor.NEUTRAL) return
   if (team == tileColor.BLUE) {
-    setUIMessage("Joined Blue Team", 2000, Color4.FromInts(0, 150, 200, 255))
+    ui.displayAnnouncement(
+      'Joined Blue Team',
+      2,
+      false,
+      Color4.FromInts(0, 150, 200, 255)
+    )
   } else if (team == tileColor.RED) {
-    setUIMessage("Joined Red Team", 2000, Color4.FromInts(250, 75, 90, 255))
+    ui.displayAnnouncement(
+      'Joined Red Team',
+      2,
+      false,
+      Color4.FromInts(250, 75, 90, 255)
+    )
   }
 
   socket.send(
