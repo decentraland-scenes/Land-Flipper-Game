@@ -1,22 +1,11 @@
-import { tileColor } from './tiles'
 import { getUserData } from '@decentraland/Identity'
-import { messageType } from './messaging'
+import { MessageType } from './messaging'
 import * as ui from '../node_modules/@dcl/ui-utils/index'
+import { tileColor } from './entities/Tile'
 
 export let playerTeam: tileColor
 
-export let playerId: string = ''
-
-export async function getUserId() {
-  let userData = await getUserData()
-  return userData.displayName
-}
-
 export async function joinTeam(team: tileColor, socket: WebSocket) {
-  if (playerId == '') {
-    playerId = await getUserId()
-  }
-
   playerTeam = team
 
   if (team == tileColor.NEUTRAL) return
@@ -38,9 +27,10 @@ export async function joinTeam(team: tileColor, socket: WebSocket) {
 
   socket.send(
     JSON.stringify({
-      type: messageType.JOIN,
-      id: playerId,
-      team: team,
+      type: MessageType.JOIN,
+      data: {
+        team: team,
+      },
     })
   )
 }

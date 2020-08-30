@@ -1,8 +1,6 @@
-export enum messageType {
-  JOIN,
-  TILEFLIP,
-  NEWGAME,
-  END,
-  MESSAGE,
-  SYNC,
+export enum MessageType {
+  JOIN = 'join',
+  NEWGAME = 'new',
+  END = 'end',
+  MESSAGE = 'msg',
 }

@@ -1,6 +1,6 @@
-import utils from "../node_modules/decentraland-ecs-utils/index"
-import { tileColor } from "./tiles"
-import { joinTeam } from "./team"
+import utils from '../node_modules/decentraland-ecs-utils/index'
+import { joinTeam } from './team'
+import { tileColor } from './entities/Tile'
 
 // Blue base
 export let blueMaterial = new Material()
@@ -13,14 +13,24 @@ let redBase = new Entity()
 let redArrow = new Entity()
 
 export function addBases(gridX, gridY, socket: WebSocket) {
-  let redTriggerBox = new utils.TriggerBoxShape(new Vector3((42 / gridX) * 2.0, 4, (42 / gridY) * 1.6), Vector3.Zero())
-  let blueTriggerBox = new utils.TriggerBoxShape(new Vector3((42 / gridX) * 1.6, 4, (42 / gridY) * 2.0), Vector3.Zero())
+  let redTriggerBox = new utils.TriggerBoxShape(
+    new Vector3((42 / gridX) * 2.0, 4, (42 / gridY) * 1.6),
+    Vector3.Zero()
+  )
+  let blueTriggerBox = new utils.TriggerBoxShape(
+    new Vector3((42 / gridX) * 1.6, 4, (42 / gridY) * 2.0),
+    Vector3.Zero()
+  )
 
   blueBase.addComponent(
     new Transform({
       position: new Vector3(45.35, 0.17, 4),
       rotation: Quaternion.Euler(90, 0, 0),
-      scale: new Vector3((42 / gridX) * 1.5, (42 / gridY) * 1.934, (42 / gridY) * 1.5),
+      scale: new Vector3(
+        (42 / gridX) * 1.5,
+        (42 / gridY) * 1.934,
+        (42 / gridY) * 1.5
+      ),
     })
   )
   blueBase.addComponent(new PlaneShape())
@@ -28,13 +38,22 @@ export function addBases(gridX, gridY, socket: WebSocket) {
   engine.addEntity(blueBase)
 
   blueBase.addComponent(
-    new utils.TriggerComponent(blueTriggerBox, 0, null, null, null, async () => {
-      await joinTeam(tileColor.BLUE, socket)
-    })
+    new utils.TriggerComponent(
+      blueTriggerBox,
+      0,
+      null,
+      null,
+      null,
+      async () => {
+        await joinTeam(tileColor.BLUE, socket)
+      }
+    )
   )
 
-  blueArrow.addComponent(new GLTFShape("models/blueTeamArrow.glb"))
-  blueArrow.addComponent(new Transform({ position: new Vector3(48.027, 3.5, 3.9) }))
+  blueArrow.addComponent(new GLTFShape('models/blueTeamArrow.glb'))
+  blueArrow.addComponent(
+    new Transform({ position: new Vector3(48.027, 3.5, 3.9) })
+  )
   engine.addEntity(blueArrow)
 
   // Red base
@@ -46,7 +65,11 @@ export function addBases(gridX, gridY, socket: WebSocket) {
     new Transform({
       position: new Vector3(4, 0.17, 45.35),
       rotation: Quaternion.Euler(90, 0, 0),
-      scale: new Vector3((42 / gridX) * 1.934, (42 / gridY) * 1.5, (42 / gridY) * 1.5),
+      scale: new Vector3(
+        (42 / gridX) * 1.934,
+        (42 / gridY) * 1.5,
+        (42 / gridY) * 1.5
+      ),
     })
   )
   redBase.addComponent(new PlaneShape())
@@ -59,8 +82,10 @@ export function addBases(gridX, gridY, socket: WebSocket) {
     })
   )
 
-  redArrow.addComponent(new GLTFShape("models/redTeamArrow.glb"))
-  redArrow.addComponent(new Transform({ position: new Vector3(6.516, 3.5, 45.25) }))
+  redArrow.addComponent(new GLTFShape('models/redTeamArrow.glb'))
+  redArrow.addComponent(
+    new Transform({ position: new Vector3(6.516, 3.5, 45.25) })
+  )
   engine.addEntity(redArrow)
 }
 
