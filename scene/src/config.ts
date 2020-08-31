@@ -1,4 +1,5 @@
-const local: boolean = false
+// use server in localhost or on the web
+const local: boolean = true
 
 const server = local
   ? 'ws://localhost:13370'
