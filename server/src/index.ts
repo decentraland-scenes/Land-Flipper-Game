@@ -1,70 +1,27 @@
 import * as WebSocket from 'ws'
+import {
+  roomDictionary,
+  MessageType,
+  roomData,
+  tileColor,
+  Player,
+} from './types'
 
 const wss = new WebSocket.Server({ port: 13370 })
+
+let gameDuration: number = 60
+
+var rooms = {} as roomDictionary
 
 interface customWs extends WebSocket {
   room: string
 }
 
-export enum MessageType {
-  JOIN = 'join',
-  TILEFLIP = 'tileflip',
-  NEWGAME = 'new',
-  END = 'end',
-  MESSAGE = 'msg',
-  SYNC = 'sync',
-}
-
-export enum tileColor {
-  NEUTRAL,
-  BLUE,
-  RED,
-}
-
-export type TilePosition = { i: number; j: number }
-
-type TileChange = {
-  position: TilePosition
-  color: tileColor
-  sender?: string
-}
-
-type FullState = {
-  active: boolean
-  tiles: tileColor[][]
-  timeLeft?: number
-  blue?: number
-  red?: number
-}
-
-class Player extends Object {
-  id: number
-  team: tileColor
-  constructor(id: number, team: tileColor) {
-    super()
-    ;(this.id = id), (this.team = team)
-  }
-}
-
-let gameDuration: number = 60
-
-// data per each room
-export class roomData {
-  gameActive: boolean = false
-  blueTeam: Player[] = []
-  redTeam: Player[] = []
-  tiles: tileColor[][] = new Array(14)
-    .fill(null)
-    .map(() => new Array(14).fill(null))
-  // TODO add time remaining
-}
-
-interface roomDictionary {
-  [index: string]: roomData
-}
-var rooms = {} as roomDictionary
-
 var CLIENTS: customWs[] = []
+
+wss.once('listening', () => {
+  console.log('Listening on port 13370')
+})
 
 wss.on('connection', (clientWs, request) => {
   const ws = clientWs as customWs
@@ -153,10 +110,6 @@ wss.on('connection', (clientWs, request) => {
   })
 })
 
-wss.once('listening', () => {
-  console.log('Listening on port 13370')
-})
-
 export async function sendAll(message: WebSocket.Data, room: string) {
   wss.clients.forEach(function each(client) {
     const cWs = client as customWs
@@ -187,35 +140,6 @@ export async function sendAllOthers(
       }
     }
   })
-}
-
-export async function playerJoin(
-  id: number,
-  msg: any,
-  room: roomData,
-  roomName: string
-) {
-  let newPlayer = new Player(id, msg.data.team)
-  if (msg.data.team == tileColor.BLUE) {
-    room.blueTeam.push(newPlayer)
-    console.log(msg.data.sender, ' joined the blue team')
-  } else {
-    room.redTeam.push(newPlayer)
-    console.log(msg.data.sender, ' joined the red team')
-  }
-
-  // with players on both teams, start new game
-  if (room.blueTeam.length > 0 && room.redTeam.length > 0) {
-    newGame(roomName)
-    console.log('New game starting! with ', room.blueTeam, room.redTeam)
-  } else {
-    JSON.stringify({
-      type: MessageType.MESSAGE,
-      data: {
-        text: 'Waiting for an opponent',
-      },
-    })
-  }
 }
 
 export async function newGame(room: string) {
@@ -308,6 +232,35 @@ export async function resetGame(room: string) {
   rooms[room].gameActive = false
   rooms[room].blueTeam = []
   rooms[room].redTeam = []
+}
+
+export async function playerJoin(
+  id: number,
+  msg: any,
+  room: roomData,
+  roomName: string
+) {
+  let newPlayer = new Player(id, msg.data.team)
+  if (msg.data.team == tileColor.BLUE) {
+    room.blueTeam.push(newPlayer)
+    console.log(msg.data.sender, ' joined the blue team')
+  } else {
+    room.redTeam.push(newPlayer)
+    console.log(msg.data.sender, ' joined the red team')
+  }
+
+  // with players on both teams, start new game
+  if (room.blueTeam.length > 0 && room.redTeam.length > 0) {
+    newGame(roomName)
+    console.log('New game starting! with ', room.blueTeam, room.redTeam)
+  } else {
+    JSON.stringify({
+      type: MessageType.MESSAGE,
+      data: {
+        text: 'Waiting for an opponent',
+      },
+    })
+  }
 }
 
 export function checkAlredyInTeams(player: number, room: string) {
