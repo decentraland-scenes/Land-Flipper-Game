@@ -7,7 +7,7 @@ import {
   Player,
 } from './types'
 
-const wss = new WebSocket.Server({ port: 13370 })
+const wss = new WebSocket.Server({ port: 8080 })
 
 let gameDuration: number = 60
 
