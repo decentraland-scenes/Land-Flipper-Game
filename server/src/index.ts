@@ -20,7 +20,7 @@ interface customWs extends WebSocket {
 var CLIENTS: customWs[] = []
 
 wss.once('listening', () => {
-  console.log('Listening on port 13370')
+  console.log('Listening on port 8080')
 })
 
 wss.on('connection', (clientWs, request) => {
