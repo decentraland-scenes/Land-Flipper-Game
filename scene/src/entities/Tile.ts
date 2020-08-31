@@ -1,5 +1,6 @@
 import { playerTeam } from '../team'
 import utils from '../../node_modules/decentraland-ecs-utils/index'
+import { game, board } from '../game'
 
 export enum tileColor {
   NEUTRAL,
@@ -19,6 +20,8 @@ blueMaterial.albedoColor = Color3.FromInts(0, 300, 400) // Blue glow
 let redMaterial = new Material()
 redMaterial.roughness = 1
 redMaterial.albedoColor = Color3.FromInts(500, 150, 180) // Pink glow
+
+let soundPlayer = new AudioSource(new AudioClip('sounds/flip.mp3'))
 
 export class Tile extends Entity {
   private color: tileColor = tileColor.NEUTRAL
@@ -47,6 +50,12 @@ export class Tile extends Entity {
     this.addComponent(
       new utils.TriggerComponent(triggerBox, 0, null, null, null, () => {
         changeListener(position, playerTeam)
+
+        // play sound
+        if (board.active && playerTeam > 0 && this.getColor() != playerTeam) {
+          this.addComponentOrReplace(soundPlayer)
+          this.getComponent(AudioSource).playOnce()
+        }
       })
     )
 

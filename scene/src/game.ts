@@ -120,7 +120,7 @@ export class GameLoop {
       )
     } else if (blue < red) {
       ui.displayAnnouncement(
-        'Blue team wins!',
+        'Red team wins!',
         3,
         false,
         Color4.FromInts(250, 75, 90, 255)

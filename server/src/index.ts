@@ -192,13 +192,19 @@ export async function newGame(room: string) {
 }
 
 export async function endGame(room: string) {
-  rooms[room].gameActive = false
-  rooms[room].blueTeam = []
-  rooms[room].redTeam = []
   let blueScore = 0
   let redScore = 0
 
-  console.log('FINAL RESULT ', rooms[room].tiles)
+  console.log(
+    'FINISHED GAME in room ',
+    room,
+    ' Blue: ',
+    blueScore,
+    ' Red ',
+    redScore,
+    'FINAL RESULT ',
+    rooms[room].tiles
+  )
 
   for (let i = 0; i < rooms[room].tiles.length; i++) {
     for (let j = 0; j < rooms[room].tiles[i].length; j++) {
@@ -216,22 +222,17 @@ export async function endGame(room: string) {
     }),
     room
   )
-  rooms[room].tiles = new Array(14 * 14).fill(null)
 
-  console.log(
-    'FINISHED GAME in room ',
-    room,
-    ' Blue: ',
-    blueScore,
-    ' Red ',
-    redScore
-  )
+  resetGame(room)
 }
 
 export async function resetGame(room: string) {
   rooms[room].gameActive = false
   rooms[room].blueTeam = []
   rooms[room].redTeam = []
+  rooms[room].tiles = new Array(14)
+    .fill(null)
+    .map(() => new Array(14).fill(null))
 }
 
 export async function playerJoin(
