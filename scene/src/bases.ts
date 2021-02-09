@@ -1,4 +1,4 @@
-import utils from '../node_modules/decentraland-ecs-utils/index'
+import * as utils from '@dcl/ecs-scene-utils'
 import { joinTeam } from './team'
 import { tileColor } from './entities/Tile'
 
@@ -38,16 +38,11 @@ export function addBases(gridX, gridY, socket: WebSocket) {
   engine.addEntity(blueBase)
 
   blueBase.addComponent(
-    new utils.TriggerComponent(
-      blueTriggerBox,
-      0,
-      null,
-      null,
-      null,
-      async () => {
+    new utils.TriggerComponent(blueTriggerBox, {
+      onCameraEnter: async () => {
         await joinTeam(tileColor.BLUE, socket)
-      }
-    )
+      },
+    })
   )
 
   blueArrow.addComponent(new GLTFShape('models/blueTeamArrow.glb'))
@@ -77,8 +72,10 @@ export function addBases(gridX, gridY, socket: WebSocket) {
   engine.addEntity(redBase)
 
   redBase.addComponent(
-    new utils.TriggerComponent(redTriggerBox, 0, null, null, null, async () => {
-      joinTeam(tileColor.RED, socket)
+    new utils.TriggerComponent(redTriggerBox, {
+      onCameraEnter: async () => {
+        joinTeam(tileColor.RED, socket)
+      },
     })
   )
 

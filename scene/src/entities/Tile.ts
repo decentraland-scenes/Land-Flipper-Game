@@ -1,5 +1,5 @@
 import { playerTeam } from '../team'
-import utils from '../../node_modules/decentraland-ecs-utils/index'
+import * as utils from '@dcl/ecs-scene-utils'
 import { game, board } from '../game'
 
 export enum tileColor {
@@ -48,14 +48,16 @@ export class Tile extends Entity {
     )
 
     this.addComponent(
-      new utils.TriggerComponent(triggerBox, 0, null, null, null, () => {
-        changeListener(position, playerTeam)
+      new utils.TriggerComponent(triggerBox, {
+        onCameraEnter: () => {
+          changeListener(position, playerTeam)
 
-        // play sound
-        if (board.active && playerTeam > 0 && this.getColor() != playerTeam) {
-          this.addComponentOrReplace(soundPlayer)
-          this.getComponent(AudioSource).playOnce()
-        }
+          // play sound
+          if (board.active && playerTeam > 0 && this.getColor() != playerTeam) {
+            this.addComponentOrReplace(soundPlayer)
+            this.getComponent(AudioSource).playOnce()
+          }
+        },
       })
     )
 

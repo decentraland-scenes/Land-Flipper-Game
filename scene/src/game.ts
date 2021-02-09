@@ -1,8 +1,7 @@
 import { joinTeam } from './team'
 import { MessageType } from './messaging'
 import { addBases, basesVisible } from './bases'
-import * as ui from '../node_modules/@dcl/ui-utils/index'
-//import { getCurrentRealm } from '@decentraland/EnvironmentAPI'
+import * as ui from '@dcl/ui-scene-utils'
 import {
   MessageAction,
   joinSocketsServer,
@@ -10,7 +9,7 @@ import {
   startSocketListeners,
   socket,
 } from './entities/MultiplayerEntity'
-import { Board } from './entities/gameBoard'
+import { Board } from './entities/GameBoard'
 import { tileColor } from './entities/Tile'
 import { timeRemaining, blueCounter, redCounter } from './ui'
 
@@ -35,7 +34,7 @@ async function setUpGame() {
   let message: MessageAction = {
     tag: MessageType.MESSAGE,
     action: (data) => {
-      ui.displayAnnouncement(data.text, 3, false, Color4.Black())
+      ui.displayAnnouncement(data.text, 3, Color4.Black())
     },
   }
 
@@ -115,18 +114,16 @@ export class GameLoop {
       ui.displayAnnouncement(
         'Blue team wins!',
         3,
-        false,
         Color4.FromInts(0, 150, 200, 255)
       )
     } else if (blue < red) {
       ui.displayAnnouncement(
         'Red team wins!',
         3,
-        false,
         Color4.FromInts(250, 75, 90, 255)
       )
     } else {
-      ui.displayAnnouncement("It's a tie!", 3, false, Color4.Black())
+      ui.displayAnnouncement("It's a tie!", 3, Color4.Black())
     }
   }
 }
