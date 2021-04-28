@@ -50,14 +50,16 @@ export class Tile extends Entity {
     this.addComponent(
       new utils.TriggerComponent(triggerBox, {
         onCameraEnter: () => {
-          changeListener(position, playerTeam)
+          if (board.active && playerTeam){
+            changeListener(position, playerTeam)
 
-          // play sound
-          if (board.active && playerTeam > 0 && this.getColor() != playerTeam) {
-            this.addComponentOrReplace(soundPlayer)
-            this.getComponent(AudioSource).playOnce()
+            // play sound
+            if (this.getColor() != playerTeam) {
+              this.addComponentOrReplace(soundPlayer)
+              this.getComponent(AudioSource).playOnce()
+            }
           }
-        },
+        }
       })
     )
 

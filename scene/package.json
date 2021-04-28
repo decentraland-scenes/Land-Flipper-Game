@@ -11,14 +11,16 @@
     "ecs:install-next": "npm install --save-dev decentraland-ecs@next"
   },
   "devDependencies": {
-    "decentraland-ecs": "^6.6.4-20210209210831.commit-8167f94"
+    "decentraland-ecs": "^6.6.5-20210423153129.commit-58b34b1"
   },
   "dependencies": {
-    "@dcl/ecs-scene-utils": "^1.6.1",
-    "@dcl/ui-scene-utils": "^1.7.1"
+    "@dcl/ecs-scene-utils": "^1.6.2-20210408012032.commit-5921be1",
+    "@dcl/ui-scene-utils": "^1.7.2-20210421205046.commit-966f879",
+    "colyseus.js": "^0.14.12"
   },
   "bundleDependencies": [
     "@dcl/ecs-scene-utils",
-    "@dcl/ui-scene-utils"
+    "@dcl/ui-scene-utils",
+    "colyseus.js"
   ]
 }

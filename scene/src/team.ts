@@ -1,11 +1,11 @@
 import { getUserData } from '@decentraland/Identity'
-import { MessageType } from './messaging'
 import * as ui from '@dcl/ui-scene-utils'
 import { tileColor } from './entities/Tile'
+import { Room } from 'colyseus.js'
 
 export let playerTeam: tileColor
 
-export async function joinTeam(team: tileColor, socket: WebSocket) {
+export async function joinTeam(team: tileColor, room: Room) {
   playerTeam = team
 
   if (team == tileColor.NEUTRAL) return
@@ -23,12 +23,25 @@ export async function joinTeam(team: tileColor, socket: WebSocket) {
     )
   }
 
-  socket.send(
-    JSON.stringify({
-      type: MessageType.JOIN,
-      data: {
+  room.send(
+   "join-team",
+     {
         team: team,
       },
-    })
   )
+
+
+    // TODO:  add proper READY button
+
+  let readyButton = new ui.MediumIcon("images/red.png", 0, 200, 50, 50, {sourceHeight:24, sourceWidth: 24})
+  readyButton.image.onClick = new OnClick(
+    ()=>{
+      room.send("ready")
+
+      readyButton.hide()
+    }
+  )
+
+  
+   
 }

@@ -1,27 +1,34 @@
-import { MultiplayerEntity } from './MultiplayerEntity'
+
 import { Tile, tileColor, TilePosition } from './Tile'
 import { game } from '../game'
+import { Room } from 'colyseus.js'
 
-export class Board extends MultiplayerEntity<TileChange, FullState> {
+export class Board extends Entity {
   private tiles: Tile[][]
   public active: boolean = false
+  public room: Room
 
-  constructor() {
+  constructor(room: Room) {
     super('Board')
     engine.addEntity(this)
+    this.room = room
 
     this.tiles = []
     for (let i = 0; i < GRIDX; i++) {
       this.tiles[i] = []
       for (let j = 0; j < GRIDZ; j++) {
-        const position = { i, j }
+        const position: TilePosition = { i, j }
         const tile = new Tile(position, (position, color) =>
-          this.propagateChange({ position, color })
+          room.send("flip-tile",{position:position, color:color})
         )
         tile.setParent(this)
         this.tiles[i][j] = tile
       }
     }
+
+
+    
+
   }
 
   protected reactToSingleChanges(change: TileChange): void {

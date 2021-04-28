@@ -1,61 +1,83 @@
-import { joinTeam } from './team'
-import { MessageType } from './messaging'
+
 import { addBases, basesVisible } from './bases'
 import * as ui from '@dcl/ui-scene-utils'
-import {
-  MessageAction,
-  joinSocketsServer,
-  messageActions,
-  startSocketListeners,
-  socket,
-} from './entities/MultiplayerEntity'
 import { Board } from './entities/GameBoard'
-import { tileColor } from './entities/Tile'
 import { timeRemaining, blueCounter, redCounter } from './ui'
+import { connect } from './connection'
+
 
 export let board: Board
 export let game: GameLoop
 
-async function setUpGame() {
-  await joinSocketsServer()
 
-  let newGame: MessageAction = {
-    tag: MessageType.NEWGAME,
-    action: (data) => {
-      game.startGame(data.duration)
-    },
-  }
-  let endGame: MessageAction = {
-    tag: MessageType.END,
-    action: (data) => {
-      game.endGame(data.blue, data.red)
-    },
-  }
-  let message: MessageAction = {
-    tag: MessageType.MESSAGE,
-    action: (data) => {
-      ui.displayAnnouncement(data.text, 3, Color4.Black())
-    },
-  }
+//TODO :  room name = realm
 
-  messageActions.push(newGame)
-  messageActions.push(endGame)
-  messageActions.push(message)
-  board = await new Board()
+//
+// Connect to Colyseus server! 
+// Set up the scene after connection has been established.
+//
+connect("my_room").then((room) => {
+  log("Connected!");
 
-  await startSocketListeners()
-  socket.onopen = function (event) {
-    board.start()
-  }
 
-  addBases(GRIDX, GRIDZ, socket)
+  board = new Board(room)
+
+  addBases(GRIDX, GRIDZ, room)
 
   game = new GameLoop(1, 60)
   engine.addSystem(game)
-  //game.defaultBoard()
-}
 
-setUpGame()
+
+   // TODO if game in progress, update from server!!!!!!!!!!!
+  if(room.state.active){
+    basesVisible(false)
+    //syncTiles()
+  } else {
+
+    game.defaultBoard()
+  }
+
+  room.onMessage("msg", (data)=>{
+    ui.displayAnnouncement(data.text)
+  })
+
+  room.onMessage("new", (data)=>{
+    game.startGame(data.duration)
+  })
+
+  room.onMessage("end", (data)=>{
+    game.endGame(data.blue, data.red)
+  })
+
+  room.onMessage("reset", (data)=>{
+    game.defaultBoard()
+  })
+
+  // room.onMessage("flip-tile", (data)=>{
+    
+  // })
+
+  // room.onStateChange( (newState) =>{
+
+  // })
+
+
+  room.state.tiles.forEach((tile) => {
+    tile.onChange = (changes) =>{
+      changes.forEach(
+        change => {
+          log( "CHANGE: ", change.field)
+          log(change.value)
+          log(change.previousValue)
+        }
+
+      )
+    }
+  })
+
+
+})
+
 
 // Local game logic running client side
 export class GameLoop {
@@ -102,7 +124,7 @@ export class GameLoop {
   }
   endGame(blue: number, red: number) {
     this.timer = 0
-    joinTeam(tileColor.NEUTRAL, socket)
+    // joinTeam(tileColor.NEUTRAL, socket)
     board.active = false
     basesVisible(true)
 
@@ -128,10 +150,8 @@ export class GameLoop {
   }
 }
 
-// export function syncScene(gameActive: boolean, tilesServer: tileColor[]) {
-//   if (gameActive == true) {
-//     game.startGame(60) // TODO use remaining time
-//   }
+
+// export function syncTiles(tilesServer: tileColor[]) {
 
 //   for (let i = 0; i < tiles.length; i++) {
 //     if (tiles[i].getComponent(TileColor).color !== tilesServer[i]) {
@@ -142,10 +162,11 @@ export class GameLoop {
 //       case tileColor.NEUTRAL:
 //     }
 //   }
-//}
 
-// Ask for current game state
-// socket.send(JSON.stringify({ type: messageType.SYNC }))
+//  timeRemaining.set(0)
+//   blueCounter.set(blue)
+//   redCounter.set(red)
+//}
 
 //  Base
 const baseGrid: Entity = new Entity()

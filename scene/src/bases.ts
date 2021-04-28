@@ -1,6 +1,7 @@
 import * as utils from '@dcl/ecs-scene-utils'
 import { joinTeam } from './team'
 import { tileColor } from './entities/Tile'
+import { Room } from 'colyseus.js'
 
 // Blue base
 export let blueMaterial = new Material()
@@ -12,7 +13,7 @@ let blueArrow = new Entity()
 let redBase = new Entity()
 let redArrow = new Entity()
 
-export function addBases(gridX, gridY, socket: WebSocket) {
+export function addBases(gridX, gridY, room: Room) {
   let redTriggerBox = new utils.TriggerBoxShape(
     new Vector3((42 / gridX) * 2.0, 4, (42 / gridY) * 1.6),
     Vector3.Zero()
@@ -40,7 +41,7 @@ export function addBases(gridX, gridY, socket: WebSocket) {
   blueBase.addComponent(
     new utils.TriggerComponent(blueTriggerBox, {
       onCameraEnter: async () => {
-        await joinTeam(tileColor.BLUE, socket)
+        await joinTeam(tileColor.BLUE, room)
       },
     })
   )
@@ -74,7 +75,7 @@ export function addBases(gridX, gridY, socket: WebSocket) {
   redBase.addComponent(
     new utils.TriggerComponent(redTriggerBox, {
       onCameraEnter: async () => {
-        joinTeam(tileColor.RED, socket)
+        joinTeam(tileColor.RED, room)
       },
     })
   )
