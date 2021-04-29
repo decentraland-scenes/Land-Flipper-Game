@@ -13,7 +13,8 @@
         "node_modules\\@dcl\\ui-scene-utils\\dist\\index.d.ts"
       ],
       "colyseus.js": [
-        "node_modules\\colyseus.js\\dist\\colyseus.d.ts"
+        "node_modules\\colyseus.js\\dist\\colyseus.d.ts",
+        "node_modules/colyseus.js/dist/colyseus.d.ts"
       ]
     },
     "baseUrl": "."
