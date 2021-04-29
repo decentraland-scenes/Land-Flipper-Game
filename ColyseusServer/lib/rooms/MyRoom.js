@@ -21,12 +21,6 @@ class MyRoom extends colyseus_1.Room {
         this.onMessage("join", (client, atIndex) => {
             // set player new position
             const player = this.state.players.get(client.sessionId);
-            if (this.state.active) {
-                // TODO send full state
-            }
-            else {
-                // TODO invite to join
-            }
         });
         this.onMessage("flip-tile", (client, data) => {
             let isPlayerIn = false;
@@ -124,9 +118,9 @@ class MyRoom extends colyseus_1.Room {
                 }
             }
             else {
+                // countdown reached zero! end the game!
                 this.end();
                 this.clock.clear();
-                // countdown reached zero! end the game!
             }
         }, 1000);
     }
@@ -145,11 +139,11 @@ class MyRoom extends colyseus_1.Room {
         }
         console.log('FINISHED GAME in room ', this.roomName, ' Blue: ', blueScore, ' Red ', redScore, 'FINAL RESULT ');
         this.broadcast("end", { blue: blueScore, red: redScore });
-        // reset after 3 seconds
+        // reset after 10 seconds
         this.clock.setTimeout(() => {
             this.reset();
             this.broadcast("reset");
-        }, 1000);
+        }, 10000);
     }
     reset() {
         this.state.players.clear();

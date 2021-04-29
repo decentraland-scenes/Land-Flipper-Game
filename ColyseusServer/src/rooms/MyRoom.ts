@@ -26,18 +26,6 @@ export class MyRoom extends Room<MyRoomState> {
     this.onMessage("join", (client: Client, atIndex: number) => {
       // set player new position
       const player = this.state.players.get(client.sessionId);
-
-      if(this.state.active){
-
-        // TODO send full state
-
-      } else {
-
-        // TODO invite to join
-
-      }
-
-
     });
 
     this.onMessage("flip-tile", (client: Client, data: any) => {
@@ -68,8 +56,6 @@ export class MyRoom extends Room<MyRoomState> {
           console.log("flipping tile ", data.position.i ,data.position.j , " to ", color )
         }
       });
-
-     
 
 
       // this.broadcast("flip-tile", {pos:atPosition , color: color});
@@ -192,11 +178,9 @@ export class MyRoom extends Room<MyRoomState> {
         }
 
       } else {
-        
-        this.end()
-        this.clock.clear();
-
         // countdown reached zero! end the game!
+        this.end()
+        this.clock.clear();  
        
       }
     }, 1000);
@@ -235,16 +219,14 @@ export class MyRoom extends Room<MyRoomState> {
     this.broadcast("end", {blue: blueScore, red: redScore});
 
 
-    // reset after 3 seconds
-
-  
+    // reset after 10 seconds
    
     this.clock.setTimeout(() => {
       
       this.reset();
       this.broadcast("reset")
          
-    }, 1000);
+    }, 10000);
 
   
   }

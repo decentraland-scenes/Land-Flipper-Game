@@ -9,6 +9,9 @@ export async function joinTeam(team: tileColor, room: Room) {
   playerTeam = team
 
   if (team == tileColor.NEUTRAL) return
+
+  if(room.state.active) return
+
   if (team == tileColor.BLUE) {
     ui.displayAnnouncement(
       'Joined Blue Team',
@@ -31,7 +34,7 @@ export async function joinTeam(team: tileColor, room: Room) {
   )
 
 
-    // TODO:  add proper READY button
+  // TODO:  add proper READY button
 
   let readyButton = new ui.MediumIcon("images/red.png", 0, 200, 50, 50, {sourceHeight:24, sourceWidth: 24})
   readyButton.image.onClick = new OnClick(

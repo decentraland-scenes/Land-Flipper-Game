@@ -30,16 +30,17 @@ export class MyRoomState extends Schema {
   
   constructor(rows: number = 14, cols:number = 14){
     super()
-
+    this.active = false
     for (let i = 0; i < rows; i ++ ){
       for (let j = 0; j < cols; j ++ ){
 
         this.tiles.push(new Tile().assign({
-          id: i*j + j,
+          id: i*cols + j,
           x : i,
           y : j,
           color : tileColor.NEUTRAL
         }))
+        
       }
     }
 

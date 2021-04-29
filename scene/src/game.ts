@@ -9,9 +9,6 @@ import { connect } from './connection'
 export let board: Board
 export let game: GameLoop
 
-
-//TODO :  room name = realm
-
 //
 // Connect to Colyseus server! 
 // Set up the scene after connection has been established.
@@ -28,14 +25,9 @@ connect("my_room").then((room) => {
   engine.addSystem(game)
 
 
-   // TODO if game in progress, update from server!!!!!!!!!!!
-  if(room.state.active){
-    basesVisible(false)
-    //syncTiles()
-  } else {
+  log("CURRENT ROOM STATE: ", room.state.active)
+   
 
-    game.defaultBoard()
-  }
 
   room.onMessage("msg", (data)=>{
     ui.displayAnnouncement(data.text)
@@ -53,28 +45,31 @@ connect("my_room").then((room) => {
     game.defaultBoard()
   })
 
-  // room.onMessage("flip-tile", (data)=>{
-    
-  // })
-
-  // room.onStateChange( (newState) =>{
-
-  // })
-
-
-  room.state.tiles.forEach((tile) => {
-    tile.onChange = (changes) =>{
-      changes.forEach(
-        change => {
-          log( "CHANGE: ", change.field)
-          log(change.value)
-          log(change.previousValue)
-        }
-
-      )
+  room.state.listen("active",(state)=>{
+    if (state.value){
+      log("GAME WAS ALREADY ON")
+      basesVisible(false)
+      board.active = true
+      game.timer = room.state.countdown
     }
   })
+  
 
+
+  room.state.tiles.onAdd = (tile)=>{
+    // log("Added tile => ", tile.id)
+    tile.listen("color", (value)=>{ 
+      
+      log("color is now ", value, " for tile ", tile.id)
+      board.tiles[tile.id].activate(value)
+
+
+      let scores: number[] = board.countTiles()
+      blueCounter.set(scores[0])
+      redCounter.set(scores[1])
+    
+    })
+  }
 
 })
 
@@ -92,10 +87,7 @@ export class GameLoop {
     this.updateTimer += dt
     if (this.updateTimer > this.updateInterval) {
       this.updateTimer = 0
-      let tiles: number[] = board.countTiles()
       timeRemaining.set(Math.floor(this.timer))
-      blueCounter.set(tiles[0])
-      redCounter.set(tiles[1])
     }
   }
   constructor(updateInterval: number, matchLength: number) {
@@ -124,7 +116,6 @@ export class GameLoop {
   }
   endGame(blue: number, red: number) {
     this.timer = 0
-    // joinTeam(tileColor.NEUTRAL, socket)
     board.active = false
     basesVisible(true)
 

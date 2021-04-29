@@ -1,6 +1,6 @@
 import { playerTeam } from '../team'
 import * as utils from '@dcl/ecs-scene-utils'
-import { game, board } from '../game'
+import { board } from '../game'
 
 export enum tileColor {
   NEUTRAL,

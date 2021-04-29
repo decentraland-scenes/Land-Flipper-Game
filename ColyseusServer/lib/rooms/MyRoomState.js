@@ -46,10 +46,11 @@ class MyRoomState extends schema_1.Schema {
         super();
         this.tiles = new schema_1.ArraySchema();
         this.players = new schema_1.MapSchema();
+        this.active = false;
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 this.tiles.push(new Tile().assign({
-                    id: i * j + j,
+                    id: i * cols + j,
                     x: i,
                     y: j,
                     color: tileColor.NEUTRAL
