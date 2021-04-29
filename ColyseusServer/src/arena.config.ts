@@ -7,7 +7,7 @@ import { monitor } from "@colyseus/monitor";
 import { MyRoom } from "./rooms/MyRoom";
 
 export default Arena({
-    getId: () => "Your Colyseus App",
+    getId: () => "Land Flipper Game",
 
     initializeGameServer: (gameServer) => {
         /**

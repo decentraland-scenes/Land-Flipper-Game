@@ -1,17 +1,17 @@
 # Land Flipper Game
 
-A multiplayer game with websockets, where the game logic is carried out server-side.
+A multiplayer game with [Colyseus]{https://www.colyseus.io/} for websockets multiplayer messaging. The game logic is carried out server-side.
 
 ![demo](https://github.com/decentraland-scenes/Land-Flipper-Game/blob/master/screenshots/land-flipper-game.gif)
 
 This scene shows you:
 
-- How to establish a websockets connection
-- How to set up a websockets server with its own logic
-- How to handle different types of websockets messages between players and server
+- How to support [Colyseus]{https://www.colyseus.io/} in a Decentraland scene
+- How to set up a simple game logic in Colyseus
+- How to handle game state changes from the server in your scene
 - How to fetch a player's realm
-- How to keep track of the game's state in the server, keeping each realm separate
-- How to handle team formation, scoring and time limits from a websockets server
+- How to keep track of the state of each realm as a separate room in your game
+- How to handle team formation, scoring and time limits from the server
 
 
 The server takes care of organizing players into teams and only starting a match when there are players on both sides.
@@ -32,7 +32,8 @@ $ npm i -g decentraland
 
 ```
 $ cd server
-$ npm start
+$ npm run build
+$ npm run start
 ```
 NOTE: If this is your first time running the scene then you need to run `npm install` before `npm start`
 
@@ -50,7 +51,66 @@ $ dcl start
 
 Open two separate browser windows, and direct one player to the Blue tile and another to the Red tile, so that there are players in both teams.
 
-> Note: Because of a known issue with the scene preview, both players might end up with the same ID, and in that case the server will reject the second one's attempt to join a team, claiming that it is already joined. To prevent this, make sure you keep the loading of both instances of the game a couple of minutes apart, that seems to ensure they don't use the same ID.
+
+
+## Using Colyseus SDK with Decentraland
+
+Install `colyseus.js`:
+
+```
+npm install --save colyseus.js
+```
+
+Add `colyseus.js` to your `"bundleDependencies"` in your `package.json`:
+
+```json
+  "bundleDependencies": [
+    "colyseus.js"
+  ]
+```
+
+To avoid TypeScript compilation errors you'll need to edit `tsconfig.json`, and include a few `///<reference` to your source-code, as you can see in the [scene/src/connection.ts](scene/src/connection.ts) file.
+
+```json
+{
+  "compilerOptions": {
+    // ...
+    "noLib": false,
+    // ...
+  }
+}
+```
+
+```typescript
+///<reference lib="es2015.symbol" />
+///<reference lib="es2015.symbol.wellknown" />
+///<reference lib="es2015.collection" />
+///<reference lib="es2015.iterable" />
+
+import { Client } from "colyseus.js";
+```
+
+> The Colyseus SDK requires a few TypeScript libraries that are excluded by default by Decentraland.
+
+
+---
+
+## Creating a Colyseus server:
+
+```
+npm init colyseus-app ./server
+```
+
+
+## Deploying to [Colyseus Arena](https://www.colyseus.io/arena)
+
+```
+npm run build
+```
+
+Upload the `lib` folder from the Arena control panel.
+
+## More
 
 
 Learn more about how to build your own scenes in our [documentation](https://docs.decentraland.org/) site.
