@@ -1,12 +1,12 @@
 # Land Flipper Game
 
-A multiplayer game with [Colyseus]{https://www.colyseus.io/} for websockets multiplayer messaging. The game logic is carried out server-side.
+A multiplayer game with [Colyseus](https://www.colyseus.io/) for websockets multiplayer messaging. The game logic is carried out server-side.
 
 ![demo](https://github.com/decentraland-scenes/Land-Flipper-Game/blob/master/screenshots/land-flipper-game.gif)
 
 This scene shows you:
 
-- How to support [Colyseus]{https://www.colyseus.io/} in a Decentraland scene
+- How to support [Colyseus](https://www.colyseus.io) in a Decentraland scene
 - How to set up a simple game logic in Colyseus
 - How to handle game state changes from the server in your scene
 - How to fetch a player's realm
