@@ -1,6 +1,6 @@
 import { playerTeam } from '../team'
 import * as utils from '@dcl/ecs-scene-utils'
-import { board } from '../game'
+import { game } from 'src/game'
 
 export enum tileColor {
   NEUTRAL,
@@ -50,7 +50,7 @@ export class Tile extends Entity {
     this.addComponent(
       new utils.TriggerComponent(triggerBox, {
         onCameraEnter: () => {
-          if (board.active && playerTeam){
+          if (game.board.active && playerTeam) {
             changeListener(position, playerTeam)
 
             // play sound
@@ -59,7 +59,7 @@ export class Tile extends Entity {
               this.getComponent(AudioSource).playOnce()
             }
           }
-        }
+        },
       })
     )
 
