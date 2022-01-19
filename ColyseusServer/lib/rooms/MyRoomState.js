@@ -9,15 +9,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyRoomState = exports.Tile = exports.tileColor = exports.Player = void 0;
 const schema_1 = require("@colyseus/schema");
 class Player extends schema_1.Schema {
+    constructor(playerId, name) {
+        super();
+        this.playerId = playerId;
+        this.name = name;
+    }
 }
 __decorate([
-    schema_1.type("string")
+    schema_1.type('string')
+], Player.prototype, "playerId", void 0);
+__decorate([
+    schema_1.type('string')
 ], Player.prototype, "name", void 0);
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], Player.prototype, "team", void 0);
 __decorate([
-    schema_1.type("boolean")
+    schema_1.type('boolean')
 ], Player.prototype, "ready", void 0);
 exports.Player = Player;
 var tileColor;
@@ -29,16 +37,16 @@ var tileColor;
 class Tile extends schema_1.Schema {
 }
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], Tile.prototype, "id", void 0);
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], Tile.prototype, "x", void 0);
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], Tile.prototype, "y", void 0);
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], Tile.prototype, "color", void 0);
 exports.Tile = Tile;
 class MyRoomState extends schema_1.Schema {
@@ -53,17 +61,17 @@ class MyRoomState extends schema_1.Schema {
                     id: i * cols + j,
                     x: i,
                     y: j,
-                    color: tileColor.NEUTRAL
+                    color: tileColor.NEUTRAL,
                 }));
             }
         }
     }
 }
 __decorate([
-    schema_1.type("boolean")
+    schema_1.type('boolean')
 ], MyRoomState.prototype, "active", void 0);
 __decorate([
-    schema_1.type("number")
+    schema_1.type('number')
 ], MyRoomState.prototype, "countdown", void 0);
 __decorate([
     schema_1.type([Tile])

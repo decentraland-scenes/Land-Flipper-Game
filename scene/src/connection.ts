@@ -23,7 +23,7 @@ export async function connect(roomName: string, options: any = {}) {
 
   log('userData:', options.userData)
 
-  // const ENDPOINT = "wss://hept-j.colyseus.dev";
+  //   const ENDPOINT = "wss://nzboy3.colyseus.dev";
   const ENDPOINT = isPreview
     ? 'ws://127.0.0.1:2567' // local environment
     : 'wss://nzboy3.colyseus.dev' // production environment

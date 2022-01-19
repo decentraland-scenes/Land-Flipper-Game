@@ -1,4 +1,3 @@
-import { getUserData } from '@decentraland/Identity'
 import * as ui from '@dcl/ui-scene-utils'
 import { tileColor } from './entities/Tile'
 import { Room } from 'colyseus.js'
