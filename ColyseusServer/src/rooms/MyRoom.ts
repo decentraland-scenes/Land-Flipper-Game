@@ -29,13 +29,13 @@ export class MyRoom extends Room<MyRoomState> {
       let color = tileColor.NEUTRAL
 
       this.state.players.forEach((player) => {
-        if (player.name == this.state.players.get(client.sessionId).name) {
+        if (player.name === this.state.players.get(client.sessionId).name) {
           color = player.team
           isPlayerIn = true
         }
       })
 
-      if (isPlayerIn == false) {
+      if (isPlayerIn === false) {
         console.log(
           'player ',
           this.state.players.get(client.sessionId).name,
@@ -45,7 +45,7 @@ export class MyRoom extends Room<MyRoomState> {
       }
 
       this.state.tiles.forEach((tile) => {
-        if (tile.x == data.position.i && tile.y == data.position.j) {
+        if (tile.x === data.position.i && tile.y === data.position.j) {
           tile.assign({ color: color })
           //tile.color = color
           console.log(
@@ -64,7 +64,7 @@ export class MyRoom extends Room<MyRoomState> {
     this.onMessage('join-team', (client: Client, data: any) => {
       const player = this.state.players.get(client.sessionId)
 
-      if (player.team == data.team) {
+      if (player.team === data.team) {
         return
       }
 
@@ -83,9 +83,9 @@ export class MyRoom extends Room<MyRoomState> {
       let readyPlayers = 0
 
       this.state.players.forEach((player) => {
-        if (player.team == tileColor.RED) {
+        if (player.team === tileColor.RED) {
           redPlayers += 1
-        } else if (player.team == tileColor.BLUE) {
+        } else if (player.team === tileColor.BLUE) {
           bluePlayers += 1
         }
 
@@ -174,9 +174,9 @@ export class MyRoom extends Room<MyRoomState> {
     let redScore = 0
 
     for (let tile of this.state.tiles) {
-      if (tile.color == tileColor.BLUE) {
+      if (tile.color === tileColor.BLUE) {
         blueScore += 1
-      } else if (tile.color == tileColor.RED) {
+      } else if (tile.color === tileColor.RED) {
         redScore += 1
       }
     }

@@ -31,7 +31,7 @@ export class Board extends Entity {
 
   // protected loadFullState(fullState: FullState): void {
   //   this.active = fullState.active
-  //   if (fullState.active == true) {
+  //   if (fullState.active === true) {
   //     game.startGame(fullState.timeLeft)
   //   } else {
   //     game.defaultBoard()
@@ -52,9 +52,9 @@ export class Board extends Entity {
   countTiles(): number[] {
     let tileCount = [0, 0]
     for (let i = 0; i < this.room.state.tiles.length; i++) {
-      if (this.room.state.tiles[i].color == tileColor.BLUE) {
+      if (this.room.state.tiles[i].color === tileColor.BLUE) {
         tileCount[0] += 1
-      } else if (this.room.state.tiles[i].color == tileColor.RED) {
+      } else if (this.room.state.tiles[i].color === tileColor.RED) {
         tileCount[1] += 1
       }
     }

@@ -54,7 +54,7 @@ export class Tile extends Entity {
             changeListener(position, playerTeam)
 
             // play sound
-            if (this.getColor() != playerTeam) {
+            if (this.getColor() !== playerTeam) {
               this.addComponentOrReplace(soundPlayer)
               this.getComponent(AudioSource).playOnce()
             }

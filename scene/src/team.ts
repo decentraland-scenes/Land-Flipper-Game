@@ -7,17 +7,17 @@ export let playerTeam: tileColor
 export async function joinTeam(team: tileColor, room: Room) {
   playerTeam = team
 
-  if (team == tileColor.NEUTRAL) return
+  if (team === tileColor.NEUTRAL) return
 
   if (room.state.active) return
 
-  if (team == tileColor.BLUE) {
+  if (team === tileColor.BLUE) {
     ui.displayAnnouncement(
       'Joined Blue Team',
       2,
       Color4.FromInts(0, 150, 200, 255)
     )
-  } else if (team == tileColor.RED) {
+  } else if (team === tileColor.RED) {
     ui.displayAnnouncement(
       'Joined Red Team',
       2,
