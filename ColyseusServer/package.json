@@ -31,7 +31,7 @@
     "@colyseus/arena": "^0.14.9",
     "@colyseus/monitor": "^0.14.0",
     "@colyseus/social": "^0.10.9",
-    "colyseus": "^0.14.0",
+    "colyseus": "^0.14.24",
     "cors": "^2.8.5",
     "express": "^4.16.4"
   }
